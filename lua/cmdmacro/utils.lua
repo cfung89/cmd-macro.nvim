@@ -17,10 +17,25 @@ local M = {}
 
 ---@class cmdmacro.macro
 ---@field name string?
----@field keymap string
+---@field keymap string|string[]
 ---@field command string
 
 M.cmdmacro_augroup = vim.api.nvim_create_augroup("cmd-macro", { clear = true })
+
+---Sets the keymap(s).
+---@param mode string|string[]
+---@param keybind string|string[]
+---@param action string|function
+---@param opts table?
+M.set_keymaps = function(mode, keybind, action, opts)
+	if type(keybind) == "string" then
+		vim.keymap.set(mode, keybind, action, opts)
+		return
+	end
+	for _, n in ipairs(keybind) do
+		vim.keymap.set(mode, n, action, opts)
+	end
+end
 
 ---@param path string
 ---@return boolean

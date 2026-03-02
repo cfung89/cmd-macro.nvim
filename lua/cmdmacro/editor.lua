@@ -180,7 +180,7 @@ M.set_macros = function(macros)
 		if macro.name then
 			keymap_opts = { desc = "cmd-macro " .. macro.name }
 		end
-		vim.keymap.set("n", macro.keymap, function()
+		utils.set_keymaps("n", macro.keymap, function()
 			M.close_editor()
 			term.send_command(macro.command)
 		end, keymap_opts)
@@ -191,7 +191,13 @@ end
 ---@param macros cmdmacro.macro[]
 M.refresh_macros = function(macros)
 	for _, prev_macro in ipairs(config.opts.specific_macros) do
-		vim.api.nvim_del_keymap("n", prev_macro.keymap)
+		if type(prev_macro.keymap) == "string" then
+			vim.api.nvim_del_keymap("n", prev_macro.keymap)
+		else
+			for _, n in ipairs(prev_macro.keymap) do
+				vim.api.nvim_del_keymap("n", n)
+			end
+		end
 	end
 	M.specific_macros = macros
 	M.set_macros(macros)

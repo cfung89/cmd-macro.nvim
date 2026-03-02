@@ -25,7 +25,7 @@ local function apply_config()
 
 	-- set terminal keymaps
 	for action, keybind in pairs(opts.keymaps) do
-		vim.keymap.set("n", keybind, string.format("<cmd>%s<CR>", opts.commands[action]), {})
+		utils.set_keymaps("n", keybind, string.format("<cmd>%s<CR>", opts.commands[action]))
 	end
 
 	-- set command macros
@@ -42,7 +42,7 @@ local function apply_config()
 	})
 	local term_to_normal = opts.terminal_settings.term_to_normal
 	if term_to_normal ~= nil then
-		vim.keymap.set("t", opts.terminal_settings.term_to_normal, "<c-\\><c-n>")
+		utils.set_keymaps("t", opts.terminal_settings.term_to_normal, "<c-\\><c-n>")
 	end
 end
 
