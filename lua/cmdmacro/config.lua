@@ -98,7 +98,10 @@ M.get_defaults = function()
 				height = editor_h,
 				col = editor_col,
 				row = editor_row,
-			}
+			},
+			keymaps = {
+				quit = { "q", "<Esc>" },
+			},
 		},
 
 		-- Set of general-purpose macros

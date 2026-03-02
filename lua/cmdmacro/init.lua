@@ -28,6 +28,9 @@ local function apply_config()
 		utils.set_keymaps("n", keybind, string.format("<cmd>%s<CR>", opts.commands[action]))
 	end
 
+	-- set editor keymaps
+	utils.set_keymaps("n", config.opts.editor.keymaps.quit, editor.close_editor, { buffer = editor.get_buffer() })
+
 	-- set command macros
 	editor.set_macros(opts.macros)
 	editor.set_macros(opts.specific_macros)

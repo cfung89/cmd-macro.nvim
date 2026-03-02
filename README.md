@@ -26,6 +26,13 @@
 
 ## Usage
 
+### Terminal Management
+
+If the terminal window is open, there are 2 possible outcomes if the user attempts to open another terminal window:
+- If the input location is the same as the open window, the window is closed.
+- If the input location is not the same as the open window, the window is moved to the new location.
+Thus, only 1 terminal managed by `cmd-macro` can be open at a time. The buffer keeps its state even if the window is closed.
+
 ### Macro Editor
 
 A window can be opened to set up the macros for a specific project. In the editor, macros can be added by specifying an optional name attribute, the keymap, and the shell command. Keymaps can be strings or arrays. Different macros are separated by 3 or more hyphens (`-`).
@@ -40,6 +47,14 @@ keymap = [ "<leader>tc", "<leader>tb" ]
 command = "cargo build"
 ```
 Double-quotes must be used for strings.
+
+### Using Macros
+
+Keybinds for macros send command to the terminal buffer and run it. If a terminal window is already open, the command will execute in that window. Otherwise, the default terminal window is opened. The cursor remains in its original position.
+
+`cmd-macro` manges two different types of macros:
+- *General-purpose macros* can be used from any directory. These are configured in your Neovim configuration.
+- *Project-specific macros* can only be used from a specific directory. These are configured in the macro editor.
 
 ## Configuration
 
@@ -87,7 +102,7 @@ return {
 
   -- General terminal settings
   terminal_settings = {
-    number = false,      -- line numbers in terminal window
+    number = false, -- line numbers in terminal window
     relativenumber = false, -- relative line numbers in terminal window
     -- Keymap to escape from terminal mode to normal mode.
     -- Disable by setting this to `nil`.
@@ -141,7 +156,10 @@ return {
       height = editor_h,
       col = editor_col,
       row = editor_row,
-    }
+    },
+    keymaps = {
+      quit = { "q", "<Esc>" },
+    },
   },
 
   -- Set of general-purpose macros

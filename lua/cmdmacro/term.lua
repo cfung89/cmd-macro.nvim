@@ -74,7 +74,7 @@ local function create_floating_terminal(location, opts)
 end
 
 ---Handles the terminal window and buffer.
----If the terminal window is open, there are 2 possible oucomes:
+---If the terminal window is open, there are 2 possible outcomes:
 ---    - If the input location is the same as the open window, the window is closed.
 ---    - If the input location is not the same as the open window, the window is moved to the new location.
 ---The buffer keeps its state even if the window is closed.

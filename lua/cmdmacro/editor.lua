@@ -119,6 +119,12 @@ local function load_editor()
 	})
 end
 
+---Returns the editor buffer number.
+---@return integer
+M.get_buffer = function()
+	return state.buf
+end
+
 ---Opens the editor window.
 ---@param opts cmdmacro.editor_config
 M.open_editor = function(opts)

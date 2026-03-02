@@ -28,6 +28,9 @@ M.cmdmacro_augroup = vim.api.nvim_create_augroup("cmd-macro", { clear = true })
 ---@param action string|function
 ---@param opts table?
 M.set_keymaps = function(mode, keybind, action, opts)
+	if keybind == nil then
+		return
+	end
 	if type(keybind) == "string" then
 		vim.keymap.set(mode, keybind, action, opts)
 		return
