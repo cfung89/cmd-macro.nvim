@@ -8,7 +8,7 @@
 - Fully customizable window UI.
 - General-purpose macros: Keymaps that can be used from any directory.
 - Project-specific macros: Keymaps that can only be used from a specific directory.
-- Simple macro editor: Window editor to configure project macros, with keymaps reset on save.
+- Simple macro editor: Window editor to configure project macros, with hot reloaded project macros.
 - Automated persistence: Saves and restores project macros.
 
 ## Installation
@@ -23,6 +23,23 @@
   end
 }
 ```
+
+## Usage
+
+### Macro Editor
+
+A window can be opened to set up the macros for a specific project. In the editor, macros can be added by specifying an optional name attribute, the keymap, and the shell command. Keymaps can be strings or arrays. Different macros are separated by 3 or more hyphens (`-`).
+
+Example:
+```
+name = "hello"
+keymap = "<leader>th"
+command = "echo hello"
+---
+keymap = [ "<leader>tc", "<leader>tb" ]
+command = "cargo build"
+```
+Double-quotes must be used for strings.
 
 ## Configuration
 
