@@ -7,13 +7,19 @@ local M = {}
 
 ---@class cmdmacro.split_window_config
 ---@field wincmd string
----@field height integer
----@field width integer
+---@field height integer|function
+---@field width integer|function
+
+---@class cmdmacro.floating_window_config : vim.api.keyset.win_config
+---@field row number|function
+---@field col number|function
+---@field width integer|function
+---@field height integer|function
 
 ---@class cmdmacro.editor_config
 ---@field number boolean
 ---@field relativenumber boolean
----@field window vim.api.keyset.win_config
+---@field window cmdmacro.floating_window_config
 
 ---@class cmdmacro.macro
 ---@field name string?
