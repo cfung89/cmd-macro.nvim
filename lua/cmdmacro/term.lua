@@ -17,8 +17,24 @@ local function set_terminal_win(win, opts)
 	if opts.wincmd ~= nil then
 		vim.cmd.wincmd(opts.wincmd)
 	end
-	vim.api.nvim_win_set_height(win, opts.height)
-	vim.api.nvim_win_set_width(win, opts.width)
+
+	local height
+	if type(opts.height) == "function" then
+		height = opts.height()
+	else
+		height = opts.height
+	end
+	assert(type(height) == "number")
+	vim.api.nvim_win_set_height(win, height)
+
+	local width
+	if type(opts.width) == "function" then
+		width = opts.width()
+	else
+		width = opts.width
+	end
+	assert(type(width) == "number")
+	vim.api.nvim_win_set_width(win, width)
 end
 
 ---Creates split terminal window.
@@ -52,7 +68,7 @@ end
 
 ---Creates a floating terminal window.
 ---@param location string
----@param opts vim.api.keyset.win_config
+---@param opts cmdmacro.floating_window_config
 ---@return cmdmacro.window_state
 local function create_floating_terminal(location, opts)
 	local new_state = ui.create_floating_window(state.buf, opts)
@@ -98,6 +114,20 @@ M.handle_terminal_win = function(location)
 		state = create_floating_terminal(location, opts)
 	end
 	vim.api.nvim_buf_set_name(state.buf, "cmd-macro terminal")
+
+	vim.api.nvim_create_autocmd("VimResized", {
+		buffer = state.buf,
+		callback = function()
+			if opts.wincmd ~= nil then
+				set_terminal_win(state.win, opts)
+			else
+				local loaded_opts = ui.calculate_floating_win_config(opts)
+				vim.api.nvim_win_set_config(state.win, loaded_opts)
+			end
+			vim.api.nvim_buf_set_name(state.buf, "cmd-macro terminal")
+		end,
+		group = utils.cmdmacro_augroup
+	})
 end
 
 ---Close terminal window.

@@ -153,6 +153,15 @@ M.open_editor = function(opts)
 		end,
 		group = utils.cmdmacro_augroup
 	})
+	vim.api.nvim_create_autocmd("VimResized", {
+		buffer = state.buf,
+		callback = function()
+			local loaded_opts = ui.calculate_floating_win_config(opts.window)
+			vim.api.nvim_win_set_config(state.win, loaded_opts)
+			vim.api.nvim_buf_set_name(state.buf, "cmd-macro editor")
+		end,
+		group = utils.cmdmacro_augroup
+	})
 end
 
 ---Closes the editor window.

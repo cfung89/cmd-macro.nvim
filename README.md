@@ -61,20 +61,7 @@ Keybinds for macros send command to the terminal buffer and run it. If a termina
 The following is the provided default configuration:
 
 ``` lua
-local total_cols = vim.o.columns
-local total_lines = vim.o.lines
-
-local center_h = math.floor(total_lines * 0.8)
-local center_w = math.floor(total_cols * 0.8)
-local center_col = math.floor((vim.o.columns - center_w) / 2)
-local center_row = math.floor((vim.o.lines - center_h) / 2)
-
-local editor_h = math.floor(total_lines * 0.6)
-local editor_w = math.floor(total_cols * 0.6)
-local editor_col = math.floor((vim.o.columns - editor_w) / 2)
-local editor_row = math.floor((vim.o.lines - editor_h) / 2)
-
-return {
+{
   commands = {
     toggle_editor = "MacroEditor", -- toggle the editor window
     terminal_close = "TerminalClose", -- close any open window (terminal and editor)
@@ -102,61 +89,75 @@ return {
 
   -- General terminal settings
   terminal_settings = {
-    number = false, -- line numbers in terminal window
+    number = false,   -- line numbers in terminal window
     relativenumber = false, -- relative line numbers in terminal window
     -- Keymap to escape from terminal mode to normal mode.
     -- Disable by setting this to `nil`.
     term_to_normal = "<C-[><C-[>"
   },
 
-  -- Window configurations for terminals and editor
+  -- Window configurations for terminals
   terminals = {
+    -- Top, Bottom, Left, and Right are split windows, identified by the presence of the `wincmd` attribute.
+    -- The `wincmd`, `height`, and `width` attributes are the only configurable UI attributes for split windows.
+    -- The `height` and `width` attributes can be an integer or a function that returns an integer.
+    -- Passing in a function allows cmd-macro to resize the Neovim window if the terminal emulator window is resized.
     Top = {
       wincmd = "K",
-      height = 8,
-      width = total_cols
+      height = function() return math.floor(0.15 * vim.o.lines) end,
+      width = vim.o.columns
     },
     Bottom = {
       wincmd = "J",
-      height = 8,
-      width = total_cols
+      height = function() return math.floor(0.15 * vim.o.lines) end,
+      width = vim.o.columns
     },
     Left = {
       wincmd = "H",
-      height = total_lines,
-      width = math.floor(vim.o.columns * 0.5)
+      height = vim.o.lines,
+      width = function() return math.floor(0.5 * vim.o.columns) end
     },
     Right = {
       wincmd = "L",
-      height = total_lines,
-      width = math.floor(vim.o.columns * 0.5)
+      height = vim.o.lines,
+      width = function() return math.floor(0.5 * vim.o.columns) end
     },
+
+    -- Center is a floating window, identified by the lack of the `wincmd` attribute.
+    -- The `height`, `width`, `row`, and `col` attributes can be an integer/number or a function that returns an integer/number.
+    -- Passing in a function allows cmd-macro to resize the Neovim window if the terminal emulator window is resized.
+    -- It has type `vim.api.keyset.win_config`, and with the exception of the `height`, `width`, `row`, and `col` attributes,
+    -- the table is passed directly to`vim.api.nvim_open_win({buffer}, {enter}, {config})` as the `config` argument.
     Center = {
       relative = "editor",
       style = "minimal",
       border = "rounded",
       title = " cmd-macro terminal ",
       title_pos = "center",
-      width = center_w,
-      height = center_h,
-      col = center_col,
-      row = center_row,
+      height = function() return math.floor(0.8 * vim.o.lines) end,
+      width = function() return math.floor(0.8 * vim.o.columns) end,
+      row = function() return math.floor(0.2 * vim.o.lines / 2) end,
+      col = function() return math.floor(0.2 * vim.o.columns / 2) end,
     },
   },
+
+  -- Window configurations for the macro editor
   editor = {
     number = true,
     relativenumber = true,
+    -- The editor window is a floating window and can be configured the same way as the Center window above.
     window = {
       relative = "editor",
       style = "minimal",
       border = "rounded",
       title = " cmd-macro editor ",
       title_pos = "center",
-      width = editor_w,
-      height = editor_h,
-      col = editor_col,
-      row = editor_row,
+      height = function() return math.floor(0.6 * vim.o.lines) end,
+      width = function() return math.floor(0.6 * vim.o.columns) end,
+      row = function() return math.floor(0.4 * vim.o.lines / 2) end,
+      col = function() return math.floor(0.4 * vim.o.columns / 2) end,
     },
+    -- Editor specific keymaps (`quit` is currently the only one)
     keymaps = {
       quit = { "q", "<Esc>" },
     },
