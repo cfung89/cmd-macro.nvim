@@ -45,7 +45,7 @@ local function apply_config()
 	})
 	local term_to_normal = opts.terminal_settings.term_to_normal
 	if term_to_normal ~= nil then
-		utils.set_keymaps("t", opts.terminal_settings.term_to_normal, "<c-\\><c-n>")
+		utils.set_keymaps("t", term_to_normal, "<c-\\><c-n>")
 	end
 end
 

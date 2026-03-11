@@ -128,6 +128,16 @@ M.handle_terminal_win = function(location)
 		end,
 		group = utils.cmdmacro_augroup
 	})
+
+	vim.api.nvim_create_autocmd("BufEnter", {
+		callback = function()
+			local wins = vim.api.nvim_tabpage_list_wins(0)
+			if #wins == 1 and vim.api.nvim_win_get_buf(wins[1]) == state.buf then
+				vim.cmd("quit")
+			end
+		end,
+		group = utils.cmdmacro_augroup
+	})
 end
 
 ---Close terminal window.
