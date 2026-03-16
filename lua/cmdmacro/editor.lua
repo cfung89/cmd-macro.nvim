@@ -25,11 +25,22 @@ local data_file = string.format("%s/%s.json", data_path, hashed_name)
 ---@return table
 local function data_to_buf(data)
 	local out = {}
-	for i, macro in ipairs(data[cwd].macros) do
-		if i ~= 1 then
-			table.insert(out, "---")
-		end
+	for _, macro in ipairs(data[cwd].macros) do
+		local name = false
+		local keymap = false
+		local command = false
+		local interactive = false
+		table.insert(out, "---")
 		for key, value in pairs(macro) do
+			if key == "name" then
+				name = true
+			elseif key == "keymap" then
+				keymap = true
+			elseif key == "command" then
+				command = true
+			elseif key == "interactive" then
+				interactive = true
+			end
 			if type(value) == "string" then
 				table.insert(out, string.format("%s = \"%s\"", key, value))
 			elseif type(value) == "table" then
@@ -41,7 +52,25 @@ local function data_to_buf(data)
 					str = str .. '"' .. n .. '"'
 				end
 				table.insert(out, string.format("%s = [ %s ]", key, str))
+			elseif type(value) == "boolean" then
+				if value then
+					table.insert(out, string.format("%s = true", key))
+				else
+					table.insert(out, string.format("%s = false", key))
+				end
 			end
+		end
+		if not name then
+			table.insert(out, "name = \"\"")
+		end
+		if not keymap then
+			table.insert(out, "keymap = \"\"")
+		end
+		if not command then
+			table.insert(out, "command = \"\"")
+		end
+		if not interactive then
+			table.insert(out, "interactive = false")
 		end
 	end
 	return out
@@ -72,6 +101,10 @@ local function buf_to_data(contents)
 			for item in raw_value:gmatch('"([^"]+)"') do
 				table.insert(value, item)
 			end
+		elseif raw_value:match('^true$') then
+			value = true
+		elseif raw_value:match('^false$') then
+			value = false
 		else
 			value = raw_value:match('^"([^"]+)"')
 		end
@@ -187,6 +220,15 @@ M.load_content = function()
 	return state.macros
 end
 
+M.template = function()
+	vim.api.nvim_put({ "-" }, "c", true, true)
+	local str = vim.api.nvim_get_current_line()
+	if str == "---" then
+		local text = { "", "interactive = false", "name = \"\"", "keymap = \"\"", "command = \"\"" }
+		vim.api.nvim_put(text, "c", true, true)
+	end
+end
+
 ---Sets the macros/keymaps.
 ---@param macros cmdmacro.macro[]
 M.set_macros = function(macros)
@@ -197,7 +239,11 @@ M.set_macros = function(macros)
 		end
 		utils.set_keymaps("n", macro.keymap, function()
 			M.close_editor()
-			term.send_command(macro.command)
+			local interactive = false
+			if macro.interactive == "true" or macro.interactive == true then
+				interactive = true
+			end
+			term.send_command(macro.command, interactive)
 		end, keymap_opts)
 	end
 end
@@ -206,10 +252,14 @@ end
 ---@param macros cmdmacro.macro[]
 M.refresh_macros = function(macros)
 	for _, prev_macro in ipairs(config.opts.specific_macros) do
-		if type(prev_macro.keymap) == "string" then
-			vim.api.nvim_del_keymap("n", prev_macro.keymap)
+		local keymap = prev_macro.keymap
+		if keymap == nil or keymap == "" then
+			return
+		end
+		if type(keymap) == "string" then
+			vim.api.nvim_del_keymap("n", keymap)
 		else
-			for _, n in ipairs(prev_macro.keymap) do
+			for _, n in ipairs(keymap) do
 				vim.api.nvim_del_keymap("n", n)
 			end
 		end

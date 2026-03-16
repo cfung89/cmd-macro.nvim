@@ -97,16 +97,20 @@ M.defaults = {
 			row = function() return math.floor(0.4 * vim.o.lines / 2) end,
 			col = function() return math.floor(0.4 * vim.o.columns / 2) end,
 		},
-		-- Editor specific keymaps (`quit` is currently the only one)
+		-- Editor specific keymaps
 		keymaps = {
 			quit = { "q", "<Esc>" },
+
+			-- editor specific keymap to auto fill the keys of the next macro
+			-- default: typing "---" (the separation string) in insert mode in the editor
+			template = true
 		},
 	},
 
 	-- Set of general-purpose macros
 	macros = {
-		-- Macros are of the following form: { name = "", keymap = "", command = "" },
-		-- Example: { name = "git_status", keymap = "<leader>gs", command = "git status" },
+		-- Macros are of the following form: { name = "", keymap = "", command = "", interactive = false },
+		-- Example: { name = "git_status", keymap = "<leader>gs", command = "git status", interactive = true },
 	}
 }
 
