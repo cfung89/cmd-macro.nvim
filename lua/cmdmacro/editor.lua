@@ -107,7 +107,7 @@ local function load_editor()
 	vim.bo[buf].bufhidden = "hide"
 	vim.api.nvim_create_autocmd("BufWriteCmd", {
 		buffer = buf,
-		callback = function() -- todo
+		callback = function()
 			state.contents = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
 			state.json_table = buf_to_data(state.contents)
 			state.macros = state.json_table[cwd].macros

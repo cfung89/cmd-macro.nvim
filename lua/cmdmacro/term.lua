@@ -113,7 +113,8 @@ M.handle_terminal_win = function(location)
 	else
 		state = create_floating_terminal(location, opts)
 	end
-	vim.api.nvim_buf_set_name(state.buf, "cmd-macro terminal")
+	pcall(function() vim.api.nvim_buf_set_name(state.buf, "cmd-macro terminal") end)
+	vim.cmd("clearjumps")
 
 	vim.api.nvim_create_autocmd("VimResized", {
 		buffer = state.buf,
@@ -129,12 +130,29 @@ M.handle_terminal_win = function(location)
 		group = utils.cmdmacro_augroup
 	})
 
-	vim.api.nvim_create_autocmd("BufEnter", {
+	vim.api.nvim_create_autocmd("WinClosed", {
 		callback = function()
-			local wins = vim.api.nvim_tabpage_list_wins(0)
-			if #wins == 1 and vim.api.nvim_win_get_buf(wins[1]) == state.buf then
-				vim.cmd("quit")
-			end
+			vim.schedule(function()
+				local wins = vim.api.nvim_tabpage_list_wins(0)
+				local only_terminals_left = true
+				for _, win in ipairs(wins) do
+					local cfg = vim.api.nvim_win_get_config(win)
+					local buf = vim.api.nvim_win_get_buf(win)
+					if cfg.relative == "" and vim.bo[buf].buftype ~= "terminal" then
+						only_terminals_left = false
+						break
+					end
+				end
+				if only_terminals_left and #wins > 0 then
+					local buf = vim.api.nvim_get_current_buf()
+					local name = vim.api.nvim_buf_get_name(buf)
+					if name:match("cmd%-macro terminal") then
+						vim.api.nvim_buf_set_name(buf, "")
+					end
+					vim.cmd("clearjumps")
+					vim.cmd("qa!")
+				end
+			end)
 		end,
 		group = utils.cmdmacro_augroup
 	})
@@ -147,6 +165,7 @@ M.close_terminal = function()
 	if not vim.api.nvim_win_is_valid(win) then
 		return
 	end
+	vim.cmd("clearjumps")
 	vim.api.nvim_win_hide(win)
 	if vim.api.nvim_buf_is_valid(buf) then
 		vim.api.nvim_buf_set_name(buf, "")
@@ -173,7 +192,10 @@ M.send_command = function(cmd)
 	if term_id == nil then
 		return
 	end
-	vim.fn.chansend(term_id, cmd .. "\n")
+	vim.fn.chansend(term_id, "\003")
+	vim.defer_fn(function()
+		vim.fn.chansend(term_id, cmd .. "\n")
+	end, 50)
 
 	-- set cursor to end of terminal
 	local line_count = vim.api.nvim_buf_line_count(state.buf)
