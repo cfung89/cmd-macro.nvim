@@ -39,11 +39,15 @@ M.set_keymaps = function(mode, keybind, action, opts)
 		return
 	end
 	if type(keybind) == "string" then
-		vim.keymap.set(mode, keybind, action, opts)
+		if #keybind ~= 0 then
+			vim.keymap.set(mode, keybind, action, opts)
+		end
 		return
 	end
 	for _, n in ipairs(keybind) do
-		vim.keymap.set(mode, n, action, opts)
+		if #n ~= 0 then
+			vim.keymap.set(mode, n, action, opts)
+		end
 	end
 end
 

@@ -197,6 +197,9 @@ M.send_command = function(cmd, interactive)
 		vim.defer_fn(function()
 			vim.fn.chansend(term_id, "\003")
 			vim.defer_fn(function()
+				if cmd == nil then
+					cmd = ""
+				end
 				if interactive then
 					vim.fn.chansend(term_id, cmd)
 				else
