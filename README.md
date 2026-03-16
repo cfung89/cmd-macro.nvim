@@ -45,6 +45,7 @@ command = "echo hello"
 ---
 keymap = [ "<leader>tc", "<leader>tb" ]
 command = "cargo build"
+interactive = true
 ```
 Double-quotes must be used for strings.
 
@@ -55,6 +56,8 @@ Keybinds for macros send command to the terminal buffer and run it. If a termina
 `cmd-macro` manges two different types of macros:
 - *General-purpose macros* can be used from any directory. These are configured in your Neovim configuration.
 - *Project-specific macros* can only be used from a specific directory. These are configured in the macro editor.
+
+Interactive is set to false by default for all macros. When a macro is interactive, if the keybind is pressed, the cursor will move to the terminal window.
 
 ## Configuration
 
@@ -160,13 +163,17 @@ The following is the provided default configuration:
     -- Editor specific keymaps (`quit` is currently the only one)
     keymaps = {
       quit = { "q", "<Esc>" },
+
+      -- editor specific keymap to auto fill the keys of the next macro
+      -- default: typing "---" (the separation string) in insert mode in the editor
+      template = true
     },
   },
 
   -- Set of general-purpose macros
   macros = {
-    -- Macros are of the following form: { name = "", keymap = "", command = "" },
-    -- Example: { name = "git_status", keymap = "<leader>gs", command = "git status" },
+		-- Macros are of the following form: { name = "", keymap = "", command = "", interactive = false },
+		-- Example: { name = "git_status", keymap = "<leader>gs", command = "git status", interactive = true },
   }
 }
 ```

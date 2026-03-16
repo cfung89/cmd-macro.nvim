@@ -180,7 +180,8 @@ end
 ---Send command to terminal buffer and run it.
 ---If a terminal window is already open, the command will execute in that window. Otherwise, the default terminal window is opened. The cursor does not move from its original position.
 ---@param cmd string
-M.send_command = function(cmd)
+---@param interactive boolean
+M.send_command = function(cmd, interactive)
 	local current_win = vim.api.nvim_get_current_win()
 	if not vim.api.nvim_win_is_valid(state.win) then
 		-- if no window open, open default terminal window
@@ -192,18 +193,31 @@ M.send_command = function(cmd)
 	if term_id == nil then
 		return
 	end
-	vim.fn.chansend(term_id, "\003")
-	vim.defer_fn(function()
-		vim.fn.chansend(term_id, cmd .. "\n")
-	end, 50)
+	vim.schedule(function()
+		vim.defer_fn(function()
+			vim.fn.chansend(term_id, "\003")
+			vim.defer_fn(function()
+				if interactive then
+					vim.fn.chansend(term_id, cmd)
+				else
+					vim.fn.chansend(term_id, cmd .. "\n")
+				end
+			end, 50)
+		end, 150)
+	end)
 
 	-- set cursor to end of terminal
 	local line_count = vim.api.nvim_buf_line_count(state.buf)
 	vim.api.nvim_win_set_cursor(state.win, { line_count, 0 })
 
-	if config.opts.terminals[state.location].wincmd ~= nil and vim.api.nvim_get_current_win() ~= current_win then
-		-- reset cursor
-		vim.api.nvim_set_current_win(current_win)
+	if not interactive then
+		if config.opts.terminals[state.location].wincmd ~= nil
+			and vim.api.nvim_get_current_win() ~= current_win then
+			-- reset cursor
+			vim.api.nvim_set_current_win(current_win)
+		end
+	else
+		vim.cmd("startinsert")
 	end
 end
 

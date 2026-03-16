@@ -25,6 +25,7 @@ local M = {}
 ---@field name string?
 ---@field keymap string|string[]
 ---@field command string
+---@field interactive (string|boolean)?
 
 M.cmdmacro_augroup = vim.api.nvim_create_augroup("cmd-macro", { clear = true })
 

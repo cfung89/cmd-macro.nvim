@@ -41,6 +41,12 @@ local function data_to_buf(data)
 					str = str .. '"' .. n .. '"'
 				end
 				table.insert(out, string.format("%s = [ %s ]", key, str))
+			elseif type(value) == "boolean" then
+				if value then
+					table.insert(out, string.format("%s = true", key))
+				else
+					table.insert(out, string.format("%s = false", key))
+				end
 			end
 		end
 	end
@@ -72,6 +78,10 @@ local function buf_to_data(contents)
 			for item in raw_value:gmatch('"([^"]+)"') do
 				table.insert(value, item)
 			end
+		elseif raw_value:match('^true$')then
+			value = true
+		elseif raw_value:match('^false$')then
+			value = false
 		else
 			value = raw_value:match('^"([^"]+)"')
 		end
@@ -187,6 +197,15 @@ M.load_content = function()
 	return state.macros
 end
 
+M.template = function()
+	vim.api.nvim_put({ "-" }, "c", true, true)
+	local str = vim.api.nvim_get_current_line()
+	if str == "---" then
+		local text = { "", "name = \"\"", "keymap = \"\"", "command = \"\"", "interactive = false" }
+		vim.api.nvim_put(text, "c", true, true)
+	end
+end
+
 ---Sets the macros/keymaps.
 ---@param macros cmdmacro.macro[]
 M.set_macros = function(macros)
@@ -197,7 +216,11 @@ M.set_macros = function(macros)
 		end
 		utils.set_keymaps("n", macro.keymap, function()
 			M.close_editor()
-			term.send_command(macro.command)
+			local interactive = false
+			if macro.interactive == "true" or macro.interactive == true then
+				interactive = true
+			end
+			term.send_command(macro.command, interactive)
 		end, keymap_opts)
 	end
 end

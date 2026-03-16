@@ -30,6 +30,9 @@ local function apply_config()
 
 	-- set editor keymaps
 	utils.set_keymaps("n", config.opts.editor.keymaps.quit, editor.close_editor, { buffer = editor.get_buffer() })
+	if config.opts.editor.keymaps.template then
+		utils.set_keymaps("i", "-", editor.template, { buffer = editor.get_buffer() })
+	end
 
 	-- set command macros
 	editor.set_macros(opts.macros)
