@@ -31,9 +31,15 @@ M.defaults = {
 	terminal_settings = {
 		number = false,   -- line numbers in terminal window
 		relativenumber = false, -- relative line numbers in terminal window
-		-- Keymap to escape from terminal mode to normal mode.
-		-- Disable by setting this to `nil`.
-		term_to_normal = "<C-[><C-[>"
+
+		-- cmd-macro terminal specific keymaps
+		keymaps = {
+			-- Keymap to escape from terminal mode to normal mode.
+			-- Disable by setting this to `nil`.
+			term_to_normal = "<C-[><C-[>",
+
+			quit = { "q", "<Esc>" },
+		}
 	},
 
 	-- Window configurations for terminals

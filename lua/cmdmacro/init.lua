@@ -46,9 +46,10 @@ local function apply_config()
 		end,
 		group = utils.cmdmacro_augroup
 	})
-	local term_to_normal = opts.terminal_settings.term_to_normal
-	if term_to_normal ~= nil then
-		utils.set_keymaps("t", term_to_normal, "<c-\\><c-n>")
+	local term_keymaps = opts.terminal_settings.keymaps
+	if term_keymaps ~= nil then
+		utils.set_keymaps("t", term_keymaps.term_to_normal, "<c-\\><c-n>", { buffer = term.get_buffer() })
+		utils.set_keymaps("n", term_keymaps.quit, term.close_terminal, { buffer = term.get_buffer() })
 	end
 end
 

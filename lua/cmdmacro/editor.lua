@@ -138,6 +138,7 @@ local function load_editor()
 	end
 	vim.bo[buf].buftype = "acwrite"
 	vim.bo[buf].bufhidden = "hide"
+	vim.bo[buf].swapfile = false
 	vim.api.nvim_create_autocmd("BufWriteCmd", {
 		buffer = buf,
 		callback = function()
@@ -210,6 +211,7 @@ M.close_editor = function()
 	else
 		buf = vim.api.nvim_create_buf(false, true)
 	end
+	vim.bo[buf].modified = false
 	state.win = -1
 end
 
@@ -221,7 +223,7 @@ M.load_content = function()
 end
 
 M.template = function()
-	vim.api.nvim_put({ "-" }, "c", true, true)
+	vim.api.nvim_put({ "-" }, "c", false, true)
 	local str = vim.api.nvim_get_current_line()
 	if str == "---" then
 		local text = { "", "interactive = false", "name = \"\"", "keymap = \"\"", "command = \"\"" }

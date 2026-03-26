@@ -56,8 +56,10 @@ Keybinds for macros send command to the terminal buffer and run it. If a termina
 `cmd-macro` manges two different types of macros:
 - *General-purpose macros* can be used from any directory. These are configured in your Neovim configuration.
 - *Project-specific macros* can only be used from a specific directory. These are configured in the macro editor.
+Macros are run instantly as soon as the the keybind is pressed by default (a new line character `'\n'` is inserted by default at the end of the command).
+Macros will also cancel whatever was already in the terminal window by inserting a `<C-c>` character before inserting the macro.
 
-Interactive is set to false by default for all macros. When a macro is interactive, if the keybind is pressed, the cursor will move to the terminal window.
+Interactive is set to false by default for all macros. When a macro is interactive, if the keybind is pressed, the cursor will move to the terminal window and the macro is not instantly run.
 
 ## Configuration
 
@@ -94,9 +96,15 @@ The following is the provided default configuration:
   terminal_settings = {
     number = false,   -- line numbers in terminal window
     relativenumber = false, -- relative line numbers in terminal window
-    -- Keymap to escape from terminal mode to normal mode.
-    -- Disable by setting this to `nil`.
-    term_to_normal = "<C-[><C-[>"
+
+    -- cmd-macro terminal specific keymaps
+    keymaps = {
+      -- Keymap to escape from terminal mode to normal mode.
+      -- Disable by setting this to `nil`.
+      term_to_normal = "<C-[><C-[>",
+
+      quit = { "q", "<Esc>" },
+    }
   },
 
   -- Window configurations for terminals
@@ -160,7 +168,7 @@ The following is the provided default configuration:
       row = function() return math.floor(0.4 * vim.o.lines / 2) end,
       col = function() return math.floor(0.4 * vim.o.columns / 2) end,
     },
-    -- Editor specific keymaps (`quit` is currently the only one)
+    -- Editor specific keymaps
     keymaps = {
       quit = { "q", "<Esc>" },
 
@@ -172,8 +180,8 @@ The following is the provided default configuration:
 
   -- Set of general-purpose macros
   macros = {
-		-- Macros are of the following form: { name = "", keymap = "", command = "", interactive = false },
-		-- Example: { name = "git_status", keymap = "<leader>gs", command = "git status", interactive = true },
+    -- Macros are of the following form: { name = "", keymap = "", command = "", interactive = false },
+    -- Example: { name = "git_status", keymap = "<leader>gs", command = "git status", interactive = true },
   }
 }
 ```
