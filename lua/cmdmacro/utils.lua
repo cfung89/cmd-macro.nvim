@@ -31,7 +31,7 @@ M.cmdmacro_augroup = vim.api.nvim_create_augroup("cmd-macro", { clear = true })
 
 ---Sets the keymap(s).
 ---@param mode string|string[]
----@param keybind string|string[]
+---@param keybind (string|string[])?
 ---@param action string|function
 ---@param opts table?
 M.set_keymaps = function(mode, keybind, action, opts)

@@ -10,6 +10,12 @@ local state = {
 	location = nil
 }
 
+---Returns the terminal buffer number.
+---@return integer
+M.get_buffer = function()
+	return state.buf
+end
+
 ---Sets split window configuration.
 ---@param win integer
 ---@param opts cmdmacro.split_window_config
