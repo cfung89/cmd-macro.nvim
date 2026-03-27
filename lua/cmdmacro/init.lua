@@ -49,7 +49,16 @@ local function apply_config()
 	local term_keymaps = opts.terminal_settings.keymaps
 	if term_keymaps ~= nil then
 		utils.set_keymaps("t", term_keymaps.term_to_normal, "<c-\\><c-n>", { buffer = term.get_buffer() })
-		utils.set_keymaps("n", term_keymaps.quit, term.close_terminal, { buffer = term.get_buffer() })
+		utils.set_keymaps("n", term_keymaps.quit,
+			function()
+				if vim.api.nvim_get_current_buf() == term.get_buffer() then
+					vim.schedule(function() term.close_terminal() end);
+					return ""
+				else
+					return "q"
+				end
+			end,
+			{ expr = true, buffer = term.get_buffer() })
 	end
 end
 
