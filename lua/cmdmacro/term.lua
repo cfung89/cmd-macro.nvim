@@ -16,6 +16,12 @@ M.get_buffer = function()
 	return state.buf
 end
 
+---Returns the terminal window number.
+---@return integer
+M.get_window = function()
+	return state.win
+end
+
 ---Sets split window configuration.
 ---@param win integer
 ---@param opts cmdmacro.split_window_config
