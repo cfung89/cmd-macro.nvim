@@ -186,7 +186,6 @@ M.close_terminal = function()
 		vim.cmd.term()
 	end
 	state.win = -1
-	state.location = nil
 end
 
 ---Send command to terminal buffer and run it.
@@ -197,7 +196,11 @@ M.send_command = function(cmd, interactive)
 	local current_win = vim.api.nvim_get_current_win()
 	if not vim.api.nvim_win_is_valid(state.win) then
 		-- if no window open, open default terminal window
-		M.handle_terminal_win(config.opts.default_terminal)
+		if state.location then
+			M.handle_terminal_win(state.location)
+		else
+			M.handle_terminal_win(config.opts.default_terminal)
+		end
 	end
 
 	-- send command to terminal
